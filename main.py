@@ -1,24 +1,30 @@
 from src.processing import (
     load_data,
     validate_columns,
-    initialize_validation_state,
-    validate_timestamp,
+    validate_data,
 )
-
-
+# Dataset_B_Medium_GPS.csv   ---data/Dataset_C_Advanced_GPS.csv
 def main():
+    file_path = "data/Dataset_B_Medium_GPS.csv"
 
-    df = load_data("data/Dataset_B_Medium_GPS.csv")
+    try:
+        df = load_data(file_path)
 
-    validate_columns(df)
+        validate_columns(df)
 
-    validation_state = initialize_validation_state(df)
+        clean_df, error_summary = validate_data(df)
 
-    validate_timestamp(df, validation_state)
+        print("\n===== Validation Summary =====")
+        print(f"Original Records : {len(df)}")
+        print(f"Valid Records    : {len(clean_df)}")
+        print(f"Invalid Records  : {len(df) - len(clean_df)}")
 
-    print(validation_state["error_summary"])
+        print("\nError Summary")
+        for key, value in error_summary.items():
+            print(f"{key:25}: {value}")
 
-    print(validation_state["valid_mask"].head())
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
