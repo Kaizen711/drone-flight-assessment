@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Drone Flight Report</title>
+
+    <style>
+
+        body{
+            font-family:Arial;
+            margin:40px;
+        }
+
+        table{
+            border-collapse:collapse;
+            width:60%;
+        }
+
+        th,td{
+            border:1px solid #ccc;
+            padding:8px;
+        }
+
+        th{
+            background:#f2f2f2;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Drone Flight Analysis Report</h1>
+
+<h2>Flight Statistics</h2>
+
+<table>
+
+{% for key,value in statistics.items() %}
+
+<tr>
+
+<td>{{ key }}</td>
+
+<td>{{ value }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<h2>Validation Summary</h2>
+
+<table>
+
+{% for key,value in validation.items() %}
+
+<tr>
+
+<td>{{ key }}</td>
+
+<td>{{ value }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<h2>Interactive Map</h2>
+
+<iframe
+    src="{{ map_file }}"
+    width="100%"
+    height="600">
+</iframe>
+
+</body>
+
+</html>
