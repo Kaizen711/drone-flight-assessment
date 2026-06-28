@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Flight Analysis Report</title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 30px;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+            text-align: left;
+        }
+
+        tr:nth-child(even){
+            background-color:#f2f2f2;
+        }
+
+        iframe{
+            width:100%;
+            height:700px;
+            border:1px solid #ccc;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Drone Flight Analysis Report</h1>
+
+<hr>
+
+<h2>Flight Statistics</h2>
+
+<table>
+
+    <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>
+
+    
+
+    <tr>
+        <td>Total Records</td>
+        <td>26</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Flight Start</td>
+        <td>2026-06-01 09:00:00</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Flight End</td>
+        <td>2026-06-01 09:04:50</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Flight Duration</td>
+        <td>0 days 00:04:50</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Flight Duration Seconds</td>
+        <td>290.0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Total Distance Km</td>
+        <td>0.185</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Total Distance M</td>
+        <td>184.67</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Average Speed</td>
+        <td>None</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Maximum Speed</td>
+        <td>None</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Minimum Speed</td>
+        <td>None</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Minimum Altitude</td>
+        <td>18.0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Maximum Altitude</td>
+        <td>24.21</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Average Altitude</td>
+        <td>20.99</td>
+    </tr>
+
+    
+
+</table>
+
+<h2>Validation Summary</h2>
+
+<table>
+
+    <tr>
+        <th>Validation</th>
+        <th>Count</th>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Timestamp</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Timestamp</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Latitude</td>
+        <td>1</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Latitude</td>
+        <td>1</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Longitude</td>
+        <td>1</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Longitude</td>
+        <td>1</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Altitude</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Altitude</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Speed</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Speed</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Heading</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Heading</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Hdop</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Hdop</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Missing Satellites</td>
+        <td>0</td>
+    </tr>
+
+    
+
+    <tr>
+        <td>Invalid Satellites</td>
+        <td>0</td>
+    </tr>
+
+    
+
+</table>
+
+<h2>Flight Map</h2>
+
+<iframe src="flight_map.html"></iframe>
+
+</body>
+
+</html>

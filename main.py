@@ -1,4 +1,11 @@
+"""
+main.py
+
+Entry point for the Drone Flight Analysis application.
+"""
+
 import logging
+from pathlib import Path
 
 from src.processing import (
     load_data,
@@ -7,90 +14,140 @@ from src.processing import (
 )
 
 from src.analysis import (
-    calculate_total_distance,
-    calculate_flight_statistics,
-    calculate_speed_statistics,
-    generate_statistics
+    generate_statistics,
 )
 
-from src.visualization import (create_base_map, create_flight_map,)
+from src.visualization import (
+    create_flight_map,
+)
+
+from src.report import generate_html_report
+
+
+
+
+# Logging Configuration
+
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(levelname)s - %(message)s"
+    format="%(levelname)s - %(message)s",
 )
+
+logger = logging.getLogger(__name__)
+
+
+
+# Main Function
 
 
 def main():
-    file_path = "data/Dataset_A_Clean_GPS.csv"
+
+    logger.info("Starting Drone Flight Analysis...")
+
+
+    # Input / Output Paths
+
+
+    input_file = "data/Dataset_B_Medium_GPS.csv"
+
+    output_directory = Path("output")
+    output_directory.mkdir(exist_ok=True)
+
+    map_file = output_directory / "flight_map.html"
+
+    report_file = output_directory / "flight_report.html"
 
     try:
-        # Load dataset
-        df = load_data(file_path)
 
-        # Validate schema
+        # Load Dataset
+
+
+        logger.info("Loading dataset...")
+
+        df = load_data(input_file)
+
+        # Validate Dataset Structure
         validate_columns(df)
 
-        # Clean data
-        clean_df, error_summary = validate_data(df)
 
-        print("\n========== VALIDATION REPORT ==========")
-        print(f"Original Records : {len(df)}")
-        print(f"Valid Records    : {len(clean_df)}")
-        print(f"Invalid Records  : {len(df) - len(clean_df)}")
+        # Validate Data
 
-        print("\nError Summary")
-        print("-" * 40)
+        clean_df, validation_summary = validate_data(df)
 
-        for key, value in error_summary.items():
-            print(f"{key:<25} : {value}")
+        logger.info(
+            "Valid records: %d / %d",
+            len(clean_df),
+            len(df),
+        )
 
-        print("\nFirst 5 Valid Records")
-        print(clean_df.head())
 
-        # ---------------- ANALYSIS ----------------
+        # Generate Statistics
 
-        distance_stats = calculate_total_distance(clean_df)
-        flight_stats = calculate_flight_statistics(clean_df)
-        speed_stats = calculate_speed_statistics(clean_df)
+
         statistics = generate_statistics(clean_df)
 
-        print("\n========== COMBINED STATISTICS ==========\n")
 
-        for key, value in statistics.items():
-            print(f"{key:<25}: {value}")
+        # Generate Interactive Map
 
-        print("\n========== DETAILED ANALYSIS ==========")
-
-        print("\nDistance Statistics")
-        print("---------------------------")
-        print(f"Distance (km): {distance_stats['total_distance_km']}")
-        print(f"Distance (m) : {distance_stats['total_distance_m']}")
-
-        print("\nFlight Statistics")
-        print("---------------------------")
-        print(f"Start Time : {flight_stats['flight_start']}")
-        print(f"End Time   : {flight_stats['flight_end']}")
-        print(f"Duration   : {flight_stats['flight_duration']}")
-        print(f"Avg Speed (km/h): {flight_stats['average_speed_kmh']}")
-
-        print("\nSpeed Statistics")
-        print("---------------------------")
-        print(f"Average Speed: {speed_stats['average_speed']}")
-        print(f"Max Speed    : {speed_stats['maximum_speed']}")
-        print(f"Min Speed    : {speed_stats['minimum_speed']}")
-        statistics = generate_statistics(clean_df)
 
         flight_map = create_flight_map(
             clean_df,
             statistics,
         )
 
-        flight_map.save("output/flight_map.html")
+        flight_map.save(map_file)
 
-    except Exception as e:
-        logging.exception("Error occurred during execution")
-        print(f"\nError: {e}")
+        logger.info("Flight map saved.")
+
+
+        # Generate HTML Report
+
+
+        generate_html_report(
+            statistics=statistics,
+            validation_summary=validation_summary,
+            map_filename=map_file.name,
+            output_file=str(report_file),
+        )
+
+        logger.info("HTML report generated.")
+
+
+        # Console Summary
+
+
+        print("\n" + "=" * 60)
+        print("      DRONE FLIGHT ANALYSIS COMPLETED")
+        print("=" * 60)
+
+        print(f"\nOriginal Records : {len(df)}")
+        print(f"Valid Records    : {len(clean_df)}")
+        print(f"Invalid Records  : {len(df) - len(clean_df)}")
+
+        print("\nFlight Statistics")
+        print("-" * 60)
+
+        for key, value in statistics.items():
+            print(f"{key:<30} : {value}")
+
+        print("\nOutput Files")
+        print("-" * 60)
+        print(f"Flight Map   : {map_file}")
+        print(f"HTML Report  : {report_file}")
+
+        print("\nProject completed successfully!")
+
+    except Exception as error:
+
+        logger.exception("Application failed.")
+
+        print("\nError:")
+        print(error)
+
+
+
+# Program Entry
 
 
 if __name__ == "__main__":
