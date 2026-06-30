@@ -22,7 +22,7 @@ from src.visualization import (
 )
 
 from src.report import generate_html_report
-
+from src.export import export_results
 
 
 
@@ -52,7 +52,10 @@ def main():
     input_file = "data/Dataset_C_Advanced_GPS.csv"
 
     output_directory = Path("output")
-    output_directory.mkdir(exist_ok=True)
+    output_directory.mkdir(
+        parents=True,exist_ok=True,
+    )
+
 
     map_file = output_directory / "flight_map.html"
 
@@ -67,20 +70,13 @@ def main():
 
         df = load_data(input_file)
 
-        # Validate Dataset Structure
-        validate_columns(df)
-
-
-        # Validate Data
-
+        # Validate & Clean Dataset
         clean_df, validation_summary = validate_data(df)
 
         logger.info(
-            "Valid records: %d / %d",
+            "Dataset validation completed (%d valid records).",
             len(clean_df),
-            len(df),
         )
-
 
         # Generate Statistics
 
@@ -98,7 +94,8 @@ def main():
 
         flight_map.save(map_file)
 
-        logger.info("Flight map saved.")
+        logger.info(
+            "Flight map saved to %s", map_file,)
 
 
         # Generate HTML Report
@@ -111,39 +108,54 @@ def main():
             output_file=str(report_file),
         )
 
-        logger.info("HTML report generated.")
+        logger.info(
+            "HTML report saved to %s",
+            report_file,
+        )
 
+        # -----------------------------------------------------------------
+        # Export Results
+        # -----------------------------------------------------------------
 
+        export_results(
+            clean_df=clean_df,
+            statistics=statistics,
+            validation_summary=validation_summary,
+            output_directory=output_directory,
+        )
+
+        # -----------------------------------------------------------------
         # Console Summary
+        # -----------------------------------------------------------------
 
-
-        print("\n" + "=" * 60)
-        print("      DRONE FLIGHT ANALYSIS COMPLETED")
-        print("=" * 60)
+        print("\n" + "=" * 70)
+        print("           DRONE FLIGHT ANALYSIS COMPLETED")
+        print("=" * 70)
 
         print(f"\nOriginal Records : {len(df)}")
         print(f"Valid Records    : {len(clean_df)}")
         print(f"Invalid Records  : {len(df) - len(clean_df)}")
 
         print("\nFlight Statistics")
-        print("-" * 60)
+        print("-" * 70)
 
         for key, value in statistics.items():
-            print(f"{key:<30} : {value}")
+            print(f"{key:<30}: {value}")
 
-        print("\nOutput Files")
-        print("-" * 60)
-        print(f"Flight Map   : {map_file}")
-        print(f"HTML Report  : {report_file}")
+        print("\nGenerated Files")
+        print("-" * 70)
 
-        print("\nProject completed successfully!")
+        print(f"Report              : {report_file}")
+        print(f"Flight Map          : {map_file}")
+        print(f"Clean Dataset       : {output_directory / 'clean_data.csv'}")
+        print(f"Statistics          : {output_directory / 'statistics.json'}")
+        print(f"Validation Summary  : {output_directory / 'validation_summary.json'}")
 
-    except Exception as error:
+        print("\nApplication completed successfully.")
 
-        logger.exception("Application failed.")
+    except Exception:
 
-        print("\nError:")
-        print(error)
+        logger.exception("Application terminated due to an unexpected error.")
 
 
 

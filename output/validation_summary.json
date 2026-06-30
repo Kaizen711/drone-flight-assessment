@@ -1,0 +1,19 @@
+{
+    "missing_timestamp": 0,
+    "invalid_timestamp": 0,
+    "missing_latitude": 0,
+    "invalid_latitude": 0,
+    "missing_longitude": 0,
+    "invalid_longitude": 0,
+    "missing_altitude": 0,
+    "invalid_altitude": 0,
+    "missing_speed": 0,
+    "invalid_speed": 0,
+    "missing_heading": 0,
+    "invalid_heading": 0,
+    "missing_hdop": 0,
+    "invalid_hdop": 0,
+    "missing_satellites": 0,
+    "invalid_satellites": 0,
+    "gps_outliers_removed": 2
+}

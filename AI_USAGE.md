@@ -28,6 +28,7 @@ AI assistance included:
 - Assisting with documentation
 - Assisting README and project documentation
 - Providing debugging suggestions during development
+-Assisting with the implementation and debugging of dataset validation, including GPS coordinate validation, timestamp validation, and consecutive point validation.
 
 ---------------------------------------------------------------------------------------------
 
