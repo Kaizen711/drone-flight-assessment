@@ -35,6 +35,12 @@ LONGITUDE_MAX = 180.0
 HEADING_MIN = 0
 HEADING_MAX = 360
 
+# GPS STATIC POINT THRESHOLD (meters)
+GPS_STATIC_DISTANCE = 2.0    # multiplier
+GPS_DISTANCE_TOLERANCE = 2.0
+GPS_MIN_TIME_SECONDS = 1              # ignore duplicate timestamps
+MIN_SPEED = 0.5                   # m/s
+
 CRS = "EPSG:4326"  # Coordinate Reference System for GPS coordinates (WGS 84)
 
 # OUTPUT SETTINGS

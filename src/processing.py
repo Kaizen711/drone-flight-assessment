@@ -1,5 +1,6 @@
 from pathlib import Path
 import logging
+from geopy.distance import geodesic
 
 import pandas as pd
 
@@ -19,6 +20,10 @@ from src.config import (
     LATITUDE_MAX,
     LONGITUDE_MIN,
     LONGITUDE_MAX,
+    GPS_DISTANCE_TOLERANCE,
+    GPS_STATIC_DISTANCE,
+    GPS_MIN_TIME_SECONDS,
+    MIN_SPEED,
 )
 
 logger = logging.getLogger(__name__)
@@ -109,6 +114,7 @@ def initialize_error_summary() -> dict:
         "invalid_hdop": 0,
         "missing_satellites": 0,
         "invalid_satellites": 0,
+        "gps_outliers_removed": 0,
     }
 
 
@@ -341,6 +347,115 @@ def validate_optional_columns(
     logger.info("Optional column validation completed.")
 
 
+def validate_consecutive_points(
+    df: pd.DataFrame,
+    state: dict,
+) -> None:
+    """
+    Detect GPS outliers using consecutive points.
+
+    A point is considered an outlier if the distance travelled from the
+    previous point is significantly greater than what is physically possible
+    based on the recorded speed and elapsed time.
+    """
+
+    if COLUMN_SPEED not in df.columns:
+        logger.info("Speed column not found. Skipping GPS outlier detection.")
+        return
+
+    valid_mask = state["valid_mask"]
+    error_summary = state["error_summary"]
+
+    timestamps = pd.to_datetime(
+        df[COLUMN_TIMESTAMP],
+        errors="coerce",
+    )
+
+    speed = pd.to_numeric(
+        df[COLUMN_SPEED],
+        errors="coerce",
+    )
+
+    latitude = pd.to_numeric(
+        df[COLUMN_LATITUDE],
+        errors="coerce",
+    )
+
+    longitude = pd.to_numeric(
+        df[COLUMN_LONGITUDE],
+        errors="coerce",
+    )
+
+    outlier_count = 0
+
+    for i in range(1, len(df)):
+
+        if not valid_mask.iloc[i]:
+            continue
+
+        if not valid_mask.iloc[i - 1]:
+            continue
+
+        if (
+            pd.isna(timestamps.iloc[i])
+            or pd.isna(timestamps.iloc[i - 1])
+        ):
+            continue
+
+        if (
+            pd.isna(speed.iloc[i])
+            or speed.iloc[i] <= 0
+        ):
+            continue
+
+        elapsed_seconds = (
+            timestamps.iloc[i] - timestamps.iloc[i - 1]
+        ).total_seconds()
+
+        if elapsed_seconds < GPS_MIN_TIME_SECONDS:
+            continue
+
+        actual_distance = geodesic(
+            (
+                latitude.iloc[i - 1],
+                longitude.iloc[i - 1],
+            ),
+            (
+                latitude.iloc[i],
+                longitude.iloc[i],
+            ),
+        ).meters
+
+        expected_distance = (
+            speed.iloc[i] * elapsed_seconds
+        )
+
+        allowed_distance = (
+            expected_distance * GPS_DISTANCE_TOLERANCE + GPS_STATIC_DISTANCE
+        )
+
+        if actual_distance > allowed_distance:
+
+            valid_mask.iloc[i] = False
+            outlier_count += 1
+
+            logger.warning(
+                (
+                    "GPS outlier detected at row %d "
+                    "(Distance %.2f m > Allowed %.2f m)"
+                ),
+                i,
+                actual_distance,
+                allowed_distance,
+            )
+
+    error_summary["gps_outliers_removed"] = outlier_count
+
+    logger.info(
+        "GPS outlier validation completed. Removed %d points.",
+        outlier_count,
+    )
+
 
 # Complete Validation
 
@@ -364,9 +479,9 @@ def validate_data(
 
     validate_optional_columns(df, validation_state)
 
-    clean_df = df[
-        validation_state["valid_mask"]
-    ].copy()
+    validate_consecutive_points(df, validation_state)
+
+    clean_df = df[validation_state["valid_mask"]].copy()
 
     total_rows = len(df)
     valid_rows = len(clean_df)
@@ -377,7 +492,4 @@ def validate_data(
     logger.info("Valid Records   : %d", valid_rows)
     logger.info("Invalid Records : %d", invalid_rows)
 
-    return (
-        clean_df,
-        validation_state["error_summary"],
-    )
+    return (clean_df, validation_state["error_summary"],)
