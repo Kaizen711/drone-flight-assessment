@@ -49,7 +49,7 @@ def main():
     # Input / Output Paths
 
 
-    input_file = "data/Dataset_C_Advanced_GPS.csv"
+    input_file = "data/Dataset_C_Advanced_GPS.csv"   #For testing Dataset C
 
     output_directory = Path("output")
     output_directory.mkdir(
